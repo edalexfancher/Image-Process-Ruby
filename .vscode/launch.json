@@ -1,0 +1,22 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name": "Debug Local File",
+      "type": "Ruby",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "program": "${workspaceRoot}/image_process.rb",
+      "env": {
+        "PATH": "/usr/local/opt/qt@5.5/bin:/Users/mbpro/.rvm/gems/ruby-2.5.1/bin:/Users/mbpro/.rvm/gems/ruby-2.5.1@global/bin:/Users/mbpro/.rvm/rubies/ruby-2.5.1/bin:/Users/mbpro/.nvm/versions/node/v12.2.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Library/Apple/bin:/usr/local/MacGPG2/bin:/Users/mbpro/.rvm/bin",
+        "GEM_HOME": "/Users/mbpro/.rvm/gems/ruby-2.5.1",
+        "GEM_PATH": "/Users/mbpro/.rvm/gems/ruby-2.5.1:/Users/mbpro/.rvm/gems/ruby-2.5.1@global",
+        "RUBY_VERSION": "ruby-2.5.1"
+      }
+    }
+  ]
+}
