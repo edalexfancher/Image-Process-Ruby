@@ -17,7 +17,7 @@ def generate_images(project_id, datapoints, parameter)
   files = []
   datapoints.each_key do |floor|
     next if floor == '7'
-    image = Magick::Image.read("sackings/floor#{floor}.jpg").first
+    image = Magick::Image.read("/opt/Image-Process-Ruby/sackings/floor#{floor}.jpg").first
     height, width = image.rows, image.columns
     gc = Magick::Draw.new
     # puts "Height: #{height}px, Width: #{width}px"
@@ -38,7 +38,7 @@ def generate_images(project_id, datapoints, parameter)
       end
       gc.draw(image)
       filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
-      image.write('results/' + filename)
+      image.write('/opt/Image-Process-Ruby/results/' + filename)
       files << filename if image.write(filename)
     end
   end
@@ -49,7 +49,7 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
   files = []
   datapoints.each_key do |floor|
     next if floor == '7'
-    image = Magick::Image.read("sackings/floor#{floor}.jpg").first
+    image = Magick::Image.read("/opt/Image-Process-Ruby/sackings/floor#{floor}.jpg").first
     height, width = image.rows, image.columns
     gc = Magick::Draw.new
     # puts "Height: #{height}px, Width: #{width}px"
@@ -86,8 +86,7 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
       end
       gc.draw(image)
       filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
-      image.write('results/' + filename)
-      if image.write('results/' + filename)
+      if image.write('/opt/Image-Process-Ruby/results/' + filename)
         images[channel]["byFloor"]["floor#{floor}"][parameter] = filename
         files << filename 
       end
