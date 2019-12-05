@@ -86,9 +86,10 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
       end
       gc.draw(image)
       filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
-      image.write('/opt/Image-Process-Ruby/results/' + filename)
-      images[channel]["byFloor"]["floor#{floor}"][parameter] = filename
-      files << filename 
+      if image.write('/opt/Image-Process-Ruby/results/' + filename)
+        images[channel]["byFloor"]["floor#{floor}"][parameter] = filename
+        files << filename 
+      end
     end
   end
   return images
