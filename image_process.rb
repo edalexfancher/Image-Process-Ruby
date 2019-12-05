@@ -1,6 +1,7 @@
-require 'RMagick'
+require 'rmagick'
 require 'sinatra'
 require 'httparty'
+require 'dotenv/load'
 
 def sign_in
   response = HTTParty.post('http://localhost:5000/api/user/signin', body: {"email": "testing1234567@gmail.com", "password": "123456"})
@@ -54,6 +55,7 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
     # puts "Height: #{height}px, Width: #{width}px"
 
     parameter == 'RSRP' ? (gc.stroke, gc.fill = "red", "red") : (gc.stroke, gc.fill = "blue", "blue")
+    gc.stroke_width(5)
 
     datapoints[floor].each_key do |channel|
       images[channel] = {} if !images.has_key?(channel)
@@ -70,7 +72,11 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
       datapoints[floor][channel].each do |reading|
         y_cord = -reading["latitude"].to_f + height
         x_cord = reading["longitude"].to_f
-
+        if reading.has_key?('color')
+          color = reading['color']
+          gc.stroke = "##{color}"
+          gc.fill = "##{color}"
+        end
         gc.point(x_cord, y_cord - 1)
         gc.point(x_cord + 1, y_cord - 1) 
         gc.point(x_cord, y_cord)
@@ -92,11 +98,15 @@ end
 
 post '/render/:id' do
   # cookie = sign_in
-  body = JSON.parse(request.body.read)
+  body = request.body.read
+  body = JSON.parse(body)
+  # body = JSON.parse(request.body.read)
+  puts body.class
   rsrp = body['RSRP']
   rsrq = body['RSRQ']
   cinr = body['CINR']
   pci = body['PCI']
+  legend = body['legend']
   files = []
   images = {}
 
