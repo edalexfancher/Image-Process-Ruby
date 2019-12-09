@@ -1,4 +1,4 @@
-require 'rmagick'
+require 'RMagick'
 require 'sinatra'
 require 'httparty'
 require 'dotenv/load'
@@ -13,49 +13,16 @@ def request_plot_points(cookie, project_id, parameter)
   return JSON.parse(response.body)
 end
 
-def generate_images(project_id, datapoints, parameter)
-  files = []
-  datapoints.each_key do |floor|
-    next if floor == '7'
-    image = Magick::Image.read("/opt/Image-Process-Ruby/sackings/floor#{floor}.jpg").first
-    height, width = image.rows, image.columns
-    gc = Magick::Draw.new
-    # puts "Height: #{height}px, Width: #{width}px"
-
-    parameter == 'RSRP' ? (gc.stroke, gc.fill = "red", "red") : (gc.stroke, gc.fill = "blue", "blue")
-
-    datapoints[floor].each_key do |channel|
-      datapoints[floor][channel].each do |reading|
-        y_cord = -reading["latitude"].to_f + height
-        x_cord = reading["longitude"].to_f
-
-        gc.point(x_cord, y_cord - 1)
-        gc.point(x_cord + 1, y_cord - 1) 
-        gc.point(x_cord, y_cord)
-        gc.point(x_cord + 1, y_cord)
-        gc.point(x_cord, y_cord + 1)
-        gc.point(x_cord + 1, y_cord + 1)
-      end
-      gc.draw(image)
-      filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
-      image.write('/opt/Image-Process-Ruby/results/' + filename)
-      files << filename if image.write(filename)
-    end
-  end
-  return files
-end
-
 def generate_images_by_floor(project_id, datapoints, parameter, images)
   files = []
   datapoints.each_key do |floor|
     next if floor == '7'
-    image = Magick::Image.read("/opt/Image-Process-Ruby/sackings/floor#{floor}.jpg").first
+    image = Magick::Image.read("#{ENV['IMAGE_FOLDER']}/floor#{floor}.jpg").first
     height, width = image.rows, image.columns
     gc = Magick::Draw.new
     # puts "Height: #{height}px, Width: #{width}px"
 
     parameter == 'RSRP' ? (gc.stroke, gc.fill = "red", "red") : (gc.stroke, gc.fill = "blue", "blue")
-    gc.stroke_width(5)
 
     datapoints[floor].each_key do |channel|
       images[channel] = {} if !images.has_key?(channel)
@@ -76,17 +43,23 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
           color = reading['color']
           gc.stroke = "##{color}"
           gc.fill = "##{color}"
+          # gc.stroke_width = 15
         end
-        gc.point(x_cord, y_cord - 1)
-        gc.point(x_cord + 1, y_cord - 1) 
-        gc.point(x_cord, y_cord)
-        gc.point(x_cord + 1, y_cord)
-        gc.point(x_cord, y_cord + 1)
-        gc.point(x_cord + 1, y_cord + 1)
+
+        # gc.point(x_cord, y_cord)
+
+        # SINCE STROKE WIDTH DOES NOT WORK NEED TO PLOT SURROUNDING POINTS
+        [-3, -2, -1, 0, 1, 2, 3].each do |x|
+          plot_x = x_cord + x
+          [-3, -2, -1, 0, 1, 2, 3].each do |y|
+            plot_y = y_cord + y
+            gc.point(plot_x, plot_y)
+          end
+        end
       end
       gc.draw(image)
       filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
-      if image.write('/opt/Image-Process-Ruby/results/' + filename)
+      if image.write("#{ENV['IMAGE_RESULTS']}/#{filename}")
         images[channel]["byFloor"]["floor#{floor}"][parameter] = filename
         files << filename 
       end
