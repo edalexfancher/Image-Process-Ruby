@@ -60,6 +60,7 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
       gc.draw(image)
       filename = "#{project_id}_#{channel}_floor#{floor}_#{parameter}.jpg"
       if image.write("#{ENV['IMAGE_RESULTS']}/#{filename}")
+        puts "saved" + filename
         images[channel]["byFloor"]["floor#{floor}"][parameter] = filename
         files << filename 
       end
@@ -69,11 +70,8 @@ def generate_images_by_floor(project_id, datapoints, parameter, images)
 end
 
 post '/render/:id' do
-  # cookie = sign_in
   body = request.body.read
   body = JSON.parse(body)
-  # body = JSON.parse(request.body.read)
-  puts body.class
   rsrp = body['RSRP']
   rsrq = body['RSRQ']
   cinr = body['CINR']
